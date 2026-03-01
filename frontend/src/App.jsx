@@ -8,6 +8,15 @@ import PainelAdmin from './pages/PainelAdmin'
 import Agendamento from './pages/Agendamento'
 import Perfil from './pages/Perfil'
 import Historico from './pages/Historico'
+import { safeJsonParse } from "./utils/storage"
+
+const rawUser = localStorage.getItem("user")
+const user = safeJsonParse(rawUser, null)
+
+// se estava quebrado, limpa
+if (rawUser && user === null && rawUser !== "null") {
+  localStorage.removeItem("user")
+}
 
 function HomeRedirect() {
   const { user } = useAuth()

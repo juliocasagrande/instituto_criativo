@@ -30,25 +30,32 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function login(email, senha) {
-    const { data } = await api.post('/auth/login/', { email, senha })
 
-    if (data?.access_token) {
-      localStorage.setItem('token', data.access_token)
-    } else {
-      localStorage.removeItem('token')
-    }
+    console.log("LOGIN INPUT", { email, senha })
 
-    // Protege contra data.user = undefined (que vira "undefined" no storage)
-    if (data?.user) {
-      localStorage.setItem('user', JSON.stringify(data.user))
+    try {
+
+      const response = await api.post("/auth/login/", {
+        email,
+        senha
+      })
+
+      console.log("LOGIN RESPONSE", response.data)
+
+      const data = response.data
+
+      localStorage.setItem("token", data.access_token)
+      localStorage.setItem("user", JSON.stringify(data.user))
+
       setUser(data.user)
+
       return data.user
-    } else {
-      localStorage.removeItem('user')
-      setUser(null)
-      // opcional: você pode lançar erro para o UI tratar
-      // throw new Error("Login retornou token mas não retornou usuário.")
-      return null
+
+    } catch (error) {
+
+      console.error("LOGIN ERROR", error.response?.data || error)
+
+      throw error
     }
   }
 
