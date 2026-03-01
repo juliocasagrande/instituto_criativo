@@ -31,17 +31,36 @@ def registrar_usuario(user_data: schemas.UserCreate, db: Session = Depends(get_d
 
 @router.post("/login/", response_model=schemas.Token)
 def login(login_data: schemas.LoginRequest, db: Session = Depends(get_db)):
-    """Autentica o usuário e retorna um token JWT."""
-    user = db.query(models.User).filter(models.User.email == login_data.email).first()
-    if not user or not verificar_senha(login_data.senha, user.senha_hash):
+
+    print("LOGIN REQUEST:", login_data.email)
+
+    user = db.query(models.User).filter(
+        models.User.email == login_data.email
+    ).first()
+
+    print("USER FOUND:", user)
+
+    if not user:
+        print("USER NOT FOUND")
         raise HTTPException(status_code=401, detail="E-mail ou senha incorretos")
 
-    token = criar_token(data={"sub": str(user.id)})
-    return schemas.Token(
-        access_token=token,
-        token_type="bearer",
-        user=schemas.UserResponse.model_validate(user)
-    )
+    senha_ok = verificar_senha(login_data.senha, user.senha_hash)
+
+    print("PASSWORD VALID:", senha_ok)
+
+    if not senha_ok:
+        print("INVALID PASSWORD")
+        raise HTTPException(status_code=401, detail="E-mail ou senha incorretos")
+
+    access_token = criar_token({"sub": str(user.id)})
+
+    print("LOGIN SUCCESS:", user.email)
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user
+    }
 
 
 # ─── PERFIL ───────────────────────────────────────────────────────────────────
