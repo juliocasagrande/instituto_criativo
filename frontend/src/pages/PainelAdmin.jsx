@@ -4,6 +4,7 @@ import Toast from '../components/Toast'
 import { useToast } from '../components/useToast'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const TIPO_STYLE = {
   profissional: { badge: 'bg-indigo-100 text-indigo-700', label: 'Profissional' },
@@ -17,6 +18,7 @@ export default function PainelAdmin() {
   const { logout } = useAuth()
   const navigate   = useNavigate()
   const { toasts, toast, removeToast } = useToast()
+  usePageTitle('Admin | Dashboard')
 
   const [stats,    setStats]    = useState(null)
   const [usuarios, setUsuarios] = useState([])

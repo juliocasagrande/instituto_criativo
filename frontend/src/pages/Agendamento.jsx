@@ -5,6 +5,7 @@ import Toast from '../components/Toast'
 import { useToast } from '../components/useToast'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const DIAS_SEMANA = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
 
@@ -29,6 +30,7 @@ export default function Agendamento() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const { toasts, toast, removeToast } = useToast()
+  usePageTitle('Agendar Consulta')
 
   const [pacientes, setPacientes] = useState([])
   const [slots, setSlots] = useState([])

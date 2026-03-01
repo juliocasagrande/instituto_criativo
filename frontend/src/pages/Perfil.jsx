@@ -5,11 +5,13 @@ import Toast from '../components/Toast'
 import { useToast } from '../components/useToast'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 export default function Perfil() {
   const { user, updateUser } = useAuth()
   const navigate = useNavigate()
   const { toasts, toast, removeToast } = useToast()
+  usePageTitle('Meu Perfil')
   const isProfissional = user?.tipo === 'profissional'
 
   const [formDados, setFormDados] = useState({ nome: user?.nome || '', email: user?.email || '' })

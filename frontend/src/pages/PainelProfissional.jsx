@@ -5,6 +5,8 @@ import Toast from '../components/Toast'
 import { useToast } from '../components/useToast'
 import ListaConsultas from '../components/ListaConsultas'
 import api from '../services/api'
+import { useAuth } from '../context/AuthContext'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const DIAS = [
   { value: 'segunda', label: 'Segunda-feira' },
@@ -26,6 +28,8 @@ function calcularIdade(dataNasc) {
 
 export default function PainelProfissional() {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  usePageTitle(user?.nome ? `${user.nome} | Dashboard` : 'Dashboard')
   const [slots, setSlots] = useState([])
   const [pacientes, setPacientes] = useState([])
   const [consultas, setConsultas] = useState([])

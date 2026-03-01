@@ -5,6 +5,7 @@ import Toast from '../components/Toast'
 import { useToast } from '../components/useToast'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const STATUS_STYLE = {
   agendado:  { badge: 'bg-teal-100 text-teal-700',   dot: 'bg-teal-400',   label: 'Agendado'  },
@@ -29,6 +30,7 @@ export default function Historico() {
   const isProfissional = user?.tipo === 'profissional'
 
   const [paciente, setPaciente] = useState(null)
+  usePageTitle(paciente?.nome ? `${paciente.nome} | Histórico` : 'Histórico')
   const [consultas, setConsultas] = useState([])
   const [loading, setLoading] = useState(true)
   const [editandoObs, setEditandoObs] = useState(null)
