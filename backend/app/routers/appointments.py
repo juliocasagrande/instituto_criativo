@@ -7,7 +7,7 @@ from app.database import get_db
 from app import models, schemas
 from app.auth import get_current_user, require_responsavel
 
-router = APIRouter(prefix="/appointments", tags=["Agendamentos"])
+router = APIRouter(prefix="/appointments/", tags=["Agendamentos"])
 
 
 @router.post("/", response_model=schemas.AppointmentResponse, status_code=201)
