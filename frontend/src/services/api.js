@@ -1,40 +1,32 @@
 import axios from "axios"
 
-// Determina a URL da API
 const API_URL =
   import.meta.env.VITE_API_URL ||
   (import.meta.env.DEV ? "http://localhost:8000" : null)
 
+console.log("API_URL (axios baseURL) =", API_URL)
+
 if (!API_URL) {
-  console.error("VITE_API_URL não está configurado no ambiente de produção.")
+  throw new Error("VITE_API_URL não definido em produção (Railway).")
 }
 
-const api = axios.create({
-  baseURL: API_URL,
-})
+const api = axios.create({ baseURL: API_URL })
 
-// Interceptor: adiciona o token JWT automaticamente
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token")
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-
+  if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
 
-// Interceptor: trata erro de autenticação
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
       localStorage.removeItem("token")
       localStorage.removeItem("user")
       window.location.href = "/login"
     }
-
-    return Promise.reject(error)
+    return Promise.reject(err)
   }
 )
 
