@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import api from '../services/api'
+import { getStoredUser, getStoredToken, safeJsonParse } from '../utils/storage'
 
 const AuthContext = createContext(null)
 
@@ -8,20 +9,47 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user')
-    const savedToken = localStorage.getItem('token')
-    if (savedUser && savedToken) {
-      setUser(JSON.parse(savedUser))
+    const savedToken = getStoredToken()
+    const savedUserRaw = localStorage.getItem('user')
+    const savedUser = safeJsonParse(savedUserRaw, null)
+
+    // Se tiver lixo ("undefined", JSON inválido etc), limpa para não travar o app
+    if (savedUserRaw && savedUser === null && savedUserRaw !== 'null') {
+      localStorage.removeItem('user')
     }
+    if (localStorage.getItem('token') && !savedToken) {
+      localStorage.removeItem('token')
+    }
+
+    // Só seta user se os dois existirem e forem válidos
+    if (savedToken && savedUser) {
+      setUser(savedUser)
+    }
+
     setLoading(false)
   }, [])
 
   async function login(email, senha) {
     const { data } = await api.post('/auth/login/', { email, senha })
-    localStorage.setItem('token', data.access_token)
-    localStorage.setItem('user', JSON.stringify(data.user))
-    setUser(data.user)
-    return data.user
+
+    if (data?.access_token) {
+      localStorage.setItem('token', data.access_token)
+    } else {
+      localStorage.removeItem('token')
+    }
+
+    // Protege contra data.user = undefined (que vira "undefined" no storage)
+    if (data?.user) {
+      localStorage.setItem('user', JSON.stringify(data.user))
+      setUser(data.user)
+      return data.user
+    } else {
+      localStorage.removeItem('user')
+      setUser(null)
+      // opcional: você pode lançar erro para o UI tratar
+      // throw new Error("Login retornou token mas não retornou usuário.")
+      return null
+    }
   }
 
   async function register(nome, email, senha, tipo) {
@@ -35,11 +63,14 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
-  // Atualiza o usuário no state e no localStorage (usado pela página de perfil)
   function updateUser(dadosAtualizados) {
-    const userAtualizado = { ...user, ...dadosAtualizados }
-    localStorage.setItem('user', JSON.stringify(userAtualizado))
-    setUser(userAtualizado)
+    const userAtualizado = { ...(user ?? {}), ...dadosAtualizados }
+
+    // Só salva se for um objeto válido
+    if (userAtualizado && typeof userAtualizado === 'object') {
+      localStorage.setItem('user', JSON.stringify(userAtualizado))
+      setUser(userAtualizado)
+    }
   }
 
   return (
