@@ -5,14 +5,12 @@ import Toast from '../components/Toast'
 import { useToast } from '../components/useToast'
 import ListaConsultas from '../components/ListaConsultas'
 import api from '../services/api'
-import { usePageTitle } from '../hooks/usePageTitle'
 import { useAuth } from '../context/AuthContext'
 
 export default function PainelResponsavel() {
   const { user } = useAuth()
   
   const navigate = useNavigate()
-  usePageTitle(user?.nome ? `${user.nome} | Painel` : 'Painel')
   const [pacientes, setPacientes] = useState([])
   const [consultas, setConsultas] = useState([])
   const [proximasConsultas, setProximasConsultas] = useState([])
@@ -34,7 +32,7 @@ export default function PainelResponsavel() {
       const [pacRes, consRes, proxRes] = await Promise.all([
         api.get('/patients/'),
         api.get('/appointments/'),
-        api.get('/appointments/proximos'),
+        api.get('/appointments/proximos/'),
       ])
       setPacientes(pacRes.data)
       setConsultas(consRes.data)
