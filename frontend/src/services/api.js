@@ -1,14 +1,10 @@
 import axios from "axios"
 
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:8000" : null)
+// Em produção (Railway): usa VITE_API_URL injetada no build
+// Em desenvolvimento: usa localhost
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000"
 
-console.log("API_URL (axios baseURL) =", API_URL)
-
-if (!API_URL) {
-  throw new Error("VITE_API_URL não definido em produção (Railway).")
-}
+console.log("API_URL =", API_URL)
 
 const api = axios.create({ baseURL: API_URL })
 
