@@ -2,6 +2,26 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
+function extractErrorMessage(err) {
+  const data = err?.response?.data;
+
+  // FastAPI 422: { detail: [ {loc:..., msg:..., type:...}, ... ] }
+  if (Array.isArray(data?.detail)) {
+    return data.detail
+      .map((e) => {
+        const field = Array.isArray(e.loc) ? e.loc[e.loc.length - 1] : "campo";
+        return `${field}: ${e.msg}`;
+      })
+      .join(" | ");
+  }
+
+  // FastAPI 401/400: { detail: "..." }
+  if (typeof data?.detail === "string") return data.detail;
+
+  // Erro genérico
+  return "Erro inesperado. Verifique os campos e tente novamente.";
+}
+
 export default function Login() {
   const [aba, setAba] = useState('login') // 'login' | 'cadastro'
   const [loading, setLoading] = useState(false)
@@ -25,11 +45,11 @@ export default function Login() {
     try {
       const user = await login(loginForm.email, loginForm.senha)
       navigate(user.tipo === 'profissional' ? '/profissional' : '/responsavel')
-    } catch (err) {
-      setErro(err.response?.data?.detail || 'Erro ao fazer login')
-    } finally {
-      setLoading(false)
-    }
+    } } catch (err) {
+        setErro(extractErrorMessage(err))
+      } finally {
+        setLoading(false)
+      }
   }
 
   async function handleCadastro(e) {
@@ -42,7 +62,7 @@ export default function Login() {
       setErro('')
       alert('Cadastro realizado! Faça login para continuar.')
     } catch (err) {
-      setErro(err.response?.data?.detail || 'Erro ao cadastrar')
+      setErro(extractErrorMessage(err))
     } finally {
       setLoading(false)
     }
