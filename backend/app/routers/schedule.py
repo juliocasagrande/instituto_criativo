@@ -9,7 +9,7 @@ from app.auth import require_profissional, get_current_user
 router = APIRouter(prefix="/schedule", tags=["Agenda"])
 
 
-@router.post("/availability", response_model=schemas.AvailabilitySlotResponse, status_code=201)
+@router.post("/availability/", response_model=schemas.AvailabilitySlotResponse, status_code=201)
 def criar_horario_disponivel(
     slot_data: schemas.AvailabilitySlotCreate,
     db: Session = Depends(get_db),
@@ -43,7 +43,7 @@ def criar_horario_disponivel(
     return novo_slot
 
 
-@router.get("/availability", response_model=List[schemas.AvailabilitySlotResponse])
+@router.get("/availability/", response_model=List[schemas.AvailabilitySlotResponse])
 def listar_horarios_disponiveis(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
@@ -52,7 +52,7 @@ def listar_horarios_disponiveis(
     return db.query(models.AvailabilitySlot).all()
 
 
-@router.delete("/availability/{slot_id}", status_code=204)
+@router.delete("/availability/{slot_id}/", status_code=204)
 def remover_horario(
     slot_id: int,
     db: Session = Depends(get_db),

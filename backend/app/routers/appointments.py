@@ -68,7 +68,7 @@ def listar_agendamentos(
     return query.order_by(models.Appointment.data, models.Appointment.hora_inicio).all()
 
 
-@router.get("/proximos", response_model=List[schemas.AppointmentResponse])
+@router.get("/proximos/", response_model=List[schemas.AppointmentResponse])
 def proximas_consultas(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
@@ -88,7 +88,7 @@ def proximas_consultas(
     return query.order_by(models.Appointment.data, models.Appointment.hora_inicio).all()
 
 
-@router.patch("/{appointment_id}/cancelar", response_model=schemas.AppointmentResponse)
+@router.patch("/{appointment_id}/cancelar/", response_model=schemas.AppointmentResponse)
 def cancelar_agendamento(
     appointment_id: int,
     db: Session = Depends(get_db),
@@ -116,7 +116,7 @@ def cancelar_agendamento(
     return agendamento
 
 
-@router.patch("/{appointment_id}/reagendar", response_model=schemas.AppointmentResponse)
+@router.patch("/{appointment_id}/reagendar/", response_model=schemas.AppointmentResponse)
 def reagendar(
     appointment_id: int,
     novos_dados: schemas.AppointmentUpdate,
