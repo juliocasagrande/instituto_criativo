@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()  # carrega o .env do diretório atual (ou acima)
+
 import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
