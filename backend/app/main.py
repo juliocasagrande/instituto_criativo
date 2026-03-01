@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -14,7 +15,15 @@ app = FastAPI(
     version="3.0.0",
 )
 
-ORIGINS = ["http://localhost:5173", "http://localhost:3000"]
+# Em produção, FRONTEND_URL virá da variável de ambiente do Railway
+FRONTEND_URL = os.getenv("FRONTEND_URL", "")
+
+ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
+if FRONTEND_URL:
+    ORIGINS.append(FRONTEND_URL)
 
 app.add_middleware(
     CORSMiddleware,
